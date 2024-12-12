@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time.is Clone</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.45/moment-timezone-with-data.min.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl">
+        <div class="mb-6">
+            <label for="timezone" class="block mb-2 text-sm font-medium text-gray-700"><!-- Time at... --></label>
+            <select id="timezone" class="w-full"></select>
+        </div>
+        <div id="time-container" class="text-center">
+            <div id="time" class="font-['Noto_Sans'] font-black text-8xl" style="font-size: 164px;"></div>
+            <div id="date" class="text-xl text-gray-600 mt-2"></div>
+        </div>
+        <div id="location" class="text-center text-gray-500 text-sm mt-4"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const timezones = moment.tz.names();
+            const localTimezone = moment.tz.guess();
+
+            $('#timezone').select2({
+                data: timezones.map(tz => ({ id: tz, text: tz })),
+                placeholder: 'Time at...',
+                allowClear: true
+            });
+
+            // Set the default timezone to the user's local timezone
+            $('#timezone').val(localTimezone).trigger('change');
+
+            // Function to update the time, date and location
+            function updateTime() {
+                const selectedTimezone = $('#timezone').val() || localTimezone;
+                const now = moment().tz(selectedTimezone);
+
+                $('#time').text(now.format('HH:mm:ss'));
+                $('#date').text(now.format('dddd, MMMM D, YYYY'));
+                // $('#location').text(selectedTimezone);
+            }
+
+            // Initial time update
+            updateTime();
+
+            // Update time every second
+            setInterval(updateTime, 1000);
+
+            // Update time when timezone changes
+            $('#timezone').on('change', updateTime);
+        });
+    </script>
+</body>
+</html>
